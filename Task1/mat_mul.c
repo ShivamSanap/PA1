@@ -49,7 +49,118 @@ void naive_mat_mul(double *A, double *B, double *C, int size) {
  */
 void loop_opt_mat_mul(double *A, double *B, double *C, int size){
 //----------------------------------------------------- Write your code here ----------------------------------------------------------------
-
+	for (int i = 0; i < size; ++i) {
+		int j = 0;
+		// JU = 2: process two columns (j and j+1)
+		for (; j + 1 < size; j += 2) {
+			double r0 = A[i * size + j];
+			double r1 = A[i * size + j + 1];
+			for (int k = 0; k < size; k += 32) {
+				C[j * size + k + 0]      += r0 * B[i * size + k + 0];
+				C[(j + 1) * size + k + 0] += r1 * B[i * size + k + 0];
+				C[j * size + k + 1]      += r0 * B[i * size + k + 1];
+				C[(j + 1) * size + k + 1] += r1 * B[i * size + k + 1];
+				C[j * size + k + 2]      += r0 * B[i * size + k + 2];
+				C[(j + 1) * size + k + 2] += r1 * B[i * size + k + 2];
+				C[j * size + k + 3]      += r0 * B[i * size + k + 3];
+				C[(j + 1) * size + k + 3] += r1 * B[i * size + k + 3];
+				C[j * size + k + 4]      += r0 * B[i * size + k + 4];
+				C[(j + 1) * size + k + 4] += r1 * B[i * size + k + 4];
+				C[j * size + k + 5]      += r0 * B[i * size + k + 5];
+				C[(j + 1) * size + k + 5] += r1 * B[i * size + k + 5];
+				C[j * size + k + 6]      += r0 * B[i * size + k + 6];
+				C[(j + 1) * size + k + 6] += r1 * B[i * size + k + 6];
+				C[j * size + k + 7]      += r0 * B[i * size + k + 7];
+				C[(j + 1) * size + k + 7] += r1 * B[i * size + k + 7];
+				C[j * size + k + 8]      += r0 * B[i * size + k + 8];
+				C[(j + 1) * size + k + 8] += r1 * B[i * size + k + 8];
+				C[j * size + k + 9]      += r0 * B[i * size + k + 9];
+				C[(j + 1) * size + k + 9] += r1 * B[i * size + k + 9];
+				C[j * size + k + 10]     += r0 * B[i * size + k + 10];
+				C[(j + 1) * size + k + 10] += r1 * B[i * size + k + 10];
+				C[j * size + k + 11]     += r0 * B[i * size + k + 11];
+				C[(j + 1) * size + k + 11] += r1 * B[i * size + k + 11];
+				C[j * size + k + 12]     += r0 * B[i * size + k + 12];
+				C[(j + 1) * size + k + 12] += r1 * B[i * size + k + 12];
+				C[j * size + k + 13]     += r0 * B[i * size + k + 13];
+				C[(j + 1) * size + k + 13] += r1 * B[i * size + k + 13];
+				C[j * size + k + 14]     += r0 * B[i * size + k + 14];
+				C[(j + 1) * size + k + 14] += r1 * B[i * size + k + 14];
+				C[j * size + k + 15]     += r0 * B[i * size + k + 15];
+				C[(j + 1) * size + k + 15] += r1 * B[i * size + k + 15];
+				C[j * size + k + 16]     += r0 * B[i * size + k + 16];
+				C[(j + 1) * size + k + 16] += r1 * B[i * size + k + 16];
+				C[j * size + k + 17]     += r0 * B[i * size + k + 17];
+				C[(j + 1) * size + k + 17] += r1 * B[i * size + k + 17];
+				C[j * size + k + 18]     += r0 * B[i * size + k + 18];
+				C[(j + 1) * size + k + 18] += r1 * B[i * size + k + 18];
+				C[j * size + k + 19]     += r0 * B[i * size + k + 19];
+				C[(j + 1) * size + k + 19] += r1 * B[i * size + k + 19];
+				C[j * size + k + 20]     += r0 * B[i * size + k + 20];
+				C[(j + 1) * size + k + 20] += r1 * B[i * size + k + 20];
+				C[j * size + k + 21]     += r0 * B[i * size + k + 21];
+				C[(j + 1) * size + k + 21] += r1 * B[i * size + k + 21];
+				C[j * size + k + 22]     += r0 * B[i * size + k + 22];
+				C[(j + 1) * size + k + 22] += r1 * B[i * size + k + 22];
+				C[j * size + k + 23]     += r0 * B[i * size + k + 23];
+				C[(j + 1) * size + k + 23] += r1 * B[i * size + k + 23];
+				C[j * size + k + 24]     += r0 * B[i * size + k + 24];
+				C[(j + 1) * size + k + 24] += r1 * B[i * size + k + 24];
+				C[j * size + k + 25]     += r0 * B[i * size + k + 25];
+				C[(j + 1) * size + k + 25] += r1 * B[i * size + k + 25];
+				C[j * size + k + 26]     += r0 * B[i * size + k + 26];
+				C[(j + 1) * size + k + 26] += r1 * B[i * size + k + 26];
+				C[j * size + k + 27]     += r0 * B[i * size + k + 27];
+				C[(j + 1) * size + k + 27] += r1 * B[i * size + k + 27];
+				C[j * size + k + 28]     += r0 * B[i * size + k + 28];
+				C[(j + 1) * size + k + 28] += r1 * B[i * size + k + 28];
+				C[j * size + k + 29]     += r0 * B[i * size + k + 29];
+				C[(j + 1) * size + k + 29] += r1 * B[i * size + k + 29];
+				C[j * size + k + 30]     += r0 * B[i * size + k + 30];
+				C[(j + 1) * size + k + 30] += r1 * B[i * size + k + 30];
+				C[j * size + k + 31]     += r0 * B[i * size + k + 31];
+				C[(j + 1) * size + k + 31] += r1 * B[i * size + k + 31];
+			}
+		}
+		// Tail for odd j
+		for (; j < size; ++j) {
+			double r = A[i * size + j];
+			for (int k = 0; k < size; k += 32) {
+				C[j * size + k + 0]  += r * B[i * size + k + 0];
+				C[j * size + k + 1]  += r * B[i * size + k + 1];
+				C[j * size + k + 2]  += r * B[i * size + k + 2];
+				C[j * size + k + 3]  += r * B[i * size + k + 3];
+				C[j * size + k + 4]  += r * B[i * size + k + 4];
+				C[j * size + k + 5]  += r * B[i * size + k + 5];
+				C[j * size + k + 6]  += r * B[i * size + k + 6];
+				C[j * size + k + 7]  += r * B[i * size + k + 7];
+				C[j * size + k + 8]  += r * B[i * size + k + 8];
+				C[j * size + k + 9]  += r * B[i * size + k + 9];
+				C[j * size + k + 10] += r * B[i * size + k + 10];
+				C[j * size + k + 11] += r * B[i * size + k + 11];
+				C[j * size + k + 12] += r * B[i * size + k + 12];
+				C[j * size + k + 13] += r * B[i * size + k + 13];
+				C[j * size + k + 14] += r * B[i * size + k + 14];
+				C[j * size + k + 15] += r * B[i * size + k + 15];
+				C[j * size + k + 16] += r * B[i * size + k + 16];
+				C[j * size + k + 17] += r * B[i * size + k + 17];
+				C[j * size + k + 18] += r * B[i * size + k + 18];
+				C[j * size + k + 19] += r * B[i * size + k + 19];
+				C[j * size + k + 20] += r * B[i * size + k + 20];
+				C[j * size + k + 21] += r * B[i * size + k + 21];
+				C[j * size + k + 22] += r * B[i * size + k + 22];
+				C[j * size + k + 23] += r * B[i * size + k + 23];
+				C[j * size + k + 24] += r * B[i * size + k + 24];
+				C[j * size + k + 25] += r * B[i * size + k + 25];
+				C[j * size + k + 26] += r * B[i * size + k + 26];
+				C[j * size + k + 27] += r * B[i * size + k + 27];
+				C[j * size + k + 28] += r * B[i * size + k + 28];
+				C[j * size + k + 29] += r * B[i * size + k + 29];
+				C[j * size + k + 30] += r * B[i * size + k + 30];
+				C[j * size + k + 31] += r * B[i * size + k + 31];
+			}
+		}
+	}
 //-------------------------------------------------------------------------------------------------------------------------------------------
 
 }
