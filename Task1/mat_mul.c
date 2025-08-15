@@ -179,7 +179,24 @@ void loop_opt_mat_mul(double *A, double *B, double *C, int size){
 */
 void tile_mat_mul(double *A, double *B, double *C, int size, int tile_size) {
 //----------------------------------------------------- Write your code here ----------------------------------------------------------------
-    
+    for (int ii = 0; ii < size; ii += tile_size) {
+        for (int jj = 0; jj < size; jj += tile_size) {
+            for (int kk = 0; kk < size; kk += tile_size) {
+                int i_max = (ii + tile_size < size) ? (ii + tile_size) : size;
+                int j_max = (jj + tile_size < size) ? (jj + tile_size) : size;
+                int k_max = (kk + tile_size < size) ? (kk + tile_size) : size;
+                for (int i = ii; i < i_max; ++i) {
+                    for (int k = kk; k < k_max; ++k) {
+                        double r = A[i * size + k];
+                        for (int j = jj; j < j_max; ++j) {
+                            C[i * size + j] += r * B[k * size + j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
     
