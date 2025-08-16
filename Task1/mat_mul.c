@@ -212,7 +212,21 @@ void tile_mat_mul(double *A, double *B, double *C, int size, int tile_size) {
 */
 void simd_mat_mul(double *A, double *B, double *C, int size) {
 //----------------------------------------------------- Write your code here ----------------------------------------------------------------
-    
+    for (int i = 0; i < size; ++i) {
+        for (int k = 0; k < size; ++k) {
+            __m256d a_ik = _mm256_set1_pd(A[i*size + k]); // Broadcast
+            int j = 0;
+            for (; j + 3 < size; j += 4) {
+                __m256d b_kj = _mm256_loadu_pd(&B[k*size + j]);
+                __m256d c_ij = _mm256_loadu_pd(&C[i*size + j]);
+                c_ij = _mm256_add_pd(c_ij, _mm256_mul_pd(a_ik, b_kj));
+                _mm256_storeu_pd(&C[i*size + j], c_ij);
+            }
+            for (; j < size; ++j) { // Tail
+                C[i*size + j] += A[i*size + k] * B[k*size + j];
+            }
+        }
+    }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
     
