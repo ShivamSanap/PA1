@@ -28,7 +28,34 @@ long long run_with_prefetching(const vector<float>& embedding_table, const vecto
     
     //----------------------------------------------------- Write your code here ----------------------------------------------------------------
     
+    vector<vector<float>> output;
+
+    for (size_t i = 0; i < offsets.size(); ++i) {
+
+        int start_idx = offsets[i];
+        int end_idx = (i + 1 < offsets.size()) ? offsets[i + 1] : input.size();
+        
+
+        vector<float> bag_embedding(embedding_dim, 0.0f);
+
+        for (int j = start_idx; j < end_idx; ++j) {
+            
+            const float* data_ptr = &embedding_table[static_cast<long long>(input[j]) * embedding_dim];
+            for (int d = 0; d < embedding_dim; ++d) {
+                _mm_prefetch(reinterpret_cast<const char*>(&data_ptr[d + 14]), _MM_HINT_T0);
+ 
+                if (j + 14 < end_idx) {
+                    const float* prefetch_embedding_ptr = &embedding_table[static_cast<long long>(((input[j + 14]) * embedding_dim)+ d )];
+                    _mm_prefetch(reinterpret_cast<const char*>(prefetch_embedding_ptr), _MM_HINT_T0);
+                }
+
+                bag_embedding[d] += data_ptr[d];
+            }
+        }
+        output.push_back(bag_embedding);
+    }
     
+
     //-------------------------------------------------------------------------------------------------------------------------------------------
     
     auto end = high_resolution_clock::now();
@@ -44,7 +71,34 @@ long long run_with_simd(const vector<float>& embedding_table, const vector<int>&
     
     //----------------------------------------------------- Write your code here ----------------------------------------------------------------
     
-    
+    vector<vector<float>> output;
+    const int vector_width = 8;
+
+    for (size_t i = 0; i < offsets.size(); ++i) {
+        int start_idx = offsets[i];
+        int end_idx = (i + 1 < offsets.size()) ? offsets[i + 1] : input.size();
+
+        __m256 bag_embedding_vec[embedding_dim / vector_width];
+        for(int k = 0; k < embedding_dim / vector_width; ++k) {
+            bag_embedding_vec[k] = _mm256_setzero_ps();
+        }
+
+        for (int j = start_idx; j < end_idx; ++j) {
+            const float* data_ptr = &embedding_table[static_cast<long long>(input[j]) * embedding_dim];
+            
+            for (int d = 0; d < embedding_dim; d += vector_width) {
+                __m256 emb_vec = _mm256_loadu_ps(data_ptr + d);
+                bag_embedding_vec[d / vector_width] = _mm256_add_ps(bag_embedding_vec[d / vector_width], emb_vec);
+            }
+        }
+
+        vector<float> bag_embedding(embedding_dim);
+        for(int k = 0; k < embedding_dim / vector_width; ++k) {
+            _mm256_storeu_ps(&bag_embedding[k * vector_width], bag_embedding_vec[k]);
+        }
+        output.push_back(bag_embedding);
+    }
+
     //-------------------------------------------------------------------------------------------------------------------------------------------
     
     auto end = high_resolution_clock::now();
@@ -59,7 +113,40 @@ long long run_with_prefetching_simd(const vector<float>& embedding_table, const 
     auto start = high_resolution_clock::now();
     
     //----------------------------------------------------- Write your code here ----------------------------------------------------------------
-    
+    vector<vector<float>> output;
+    const int vector_width = 8; // 8 floats in a __m256 register
+
+    for (size_t i = 0; i < offsets.size(); ++i) {
+        int start_idx = offsets[i];
+        int end_idx = (i + 1 < offsets.size()) ? offsets[i + 1] : input.size();
+
+        __m256 bag_embedding_vec[embedding_dim / vector_width];
+        for(int k = 0; k < embedding_dim / vector_width; ++k) {
+            bag_embedding_vec[k] = _mm256_setzero_ps();
+        }
+ 
+        for (int j = start_idx; j < end_idx; ++j) {
+            // Prefetch data for a future iteration
+            if (j + 12 < end_idx) {
+                const float* prefetch_ptr = &embedding_table[static_cast<long long>(input[j + 12]) * embedding_dim];
+                _mm_prefetch(reinterpret_cast<const char*>(prefetch_ptr), _MM_HINT_T0);
+            }
+
+            const float* data_ptr = &embedding_table[static_cast<long long>(input[j]) * embedding_dim];
+            
+            // Vectorized accumulation
+            for (int d = 0; d < embedding_dim; d += vector_width) {
+                __m256 emb_vec = _mm256_loadu_ps(data_ptr + d);
+                bag_embedding_vec[d / vector_width] = _mm256_add_ps(bag_embedding_vec[d / vector_width], emb_vec);
+            }
+        }
+
+        vector<float> bag_embedding(embedding_dim);
+        for(int k = 0; k < embedding_dim / vector_width; ++k) {
+            _mm256_storeu_ps(&bag_embedding[k * vector_width], bag_embedding_vec[k]);
+        }
+        output.push_back(bag_embedding);
+    }
     
     //-------------------------------------------------------------------------------------------------------------------------------------------
     
